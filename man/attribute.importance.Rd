@@ -1,0 +1,31 @@
+\name{attribute.importance}
+\alias{attribute.importance}
+\title{Determine the relative importance of each attribute in the dataset
+using the method of Breiman et al.}
+\usage{
+attribute.importance(model = model, data = data, class.name = class.name,
+  class.index = class.index, tree = tree)
+}
+\arguments{
+  \item{model}{A model of the data from a classifier}
+
+  \item{data}{The data matrix}
+
+  \item{class.name}{The name of the column with the class
+  label}
+
+  \item{class.index}{The name of the column with the class
+  label}
+
+  \item{tree}{A permutation tree}
+}
+\value{
+A vector with the relative fidelity of each attribute in
+the dataset.
+}
+\description{
+Determine the relative importance of each attribute in the
+dataset using the method of Breiman et al.
+}
+\keyword{internal}
+

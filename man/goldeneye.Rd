@@ -1,0 +1,95 @@
+\docType{package}
+\name{goldeneye}
+\alias{goldeneye}
+\alias{goldeneye-package}
+\title{Investigate how classifiers utilize the structure of datasets.}
+\usage{
+goldeneye(data, model = NULL, classifier = NULL,
+  delta = (1/sqrt(nrow(data))), real.class.name = "Class",
+  pred.class.name = "PClass", return.model = FALSE, return.data = FALSE)
+}
+\arguments{
+  \item{data}{The dataset.}
+
+  \item{model}{A model created from the data using a
+  classifier.}
+
+  \item{classifier}{A classifier (e.g. svm) to use}
+
+  \item{delta}{The sensitivity parameter. Defaults to 1 /
+  sqrn(nrow(data)).}
+
+  \item{real.class.name}{The name of the column in the
+  dataset with the true classes.}
+
+  \item{pred.class.name}{The name of the column in the
+  dataset with the predicted classes.}
+
+  \item{return.model}{Should the model created from a
+  classifier be returned. Default is FALSE.}
+
+  \item{return.data}{Should the data with predictions from
+  the classifier be returned. Default is FALSE.}
+}
+\value{
+A list containing the following items: \describe{
+\item{S}{The optimal grouping} \item{S.fid}{The fidelity
+for the optimal grouping} \item{S.pruned}{The optimal
+grouping with singletons pruned} \item{S.fid.pruned}{The
+fidelity for the optimal grouping with singletons pruned}
+\item{bayes.fidelity}{The fidelity when calculated using a
+naive Bayes (all-singleton) grouping.}
+\item{acc.original}{The original classification accuracy.}
+\item{acc.final}{The classification accuracy using the
+final grouping, with singletons pruned.} \item{delta}{The
+value of delta used.} } In addition, depending on the input
+arguments, the following fields may also be returned:
+\describe{ \item{model}{The classifier model. Returned if
+return.model is TRUE.} \item{data}{The testing data
+separated from the input data. Returned if return.data is
+TRUE.} \item{data.inflated}{The dataset, created by
+sampling with replacement from the testing data, inflated
+based on the value of delta. Returned if return.data is
+TRUE.} }
+}
+\description{
+The goldeneye package contains functions for finding
+groupings of attributes in a dataset. The groupings reveal
+how a classifier utilizes the structure of the data when
+classifying the data.
+
+This function iteratively finds the optimal grouping of
+attributes for a dataset using a given classifier, after
+which singletons are pruned.
+}
+\examples{
+library(RWeka)
+set.seed(42)
+data <- gen.data.single.xor()
+set.seed(42)
+goldeneye(data = data, classifier = classifier.single.xor)
+
+## C4.5 Decision tree
+set.seed(42)
+goldeneye(data = data, classifier = J48)
+
+## SVM with linear kernel
+#' goldeneye(data = data, classifier = SMO)
+
+## Using classifiers with custom parameters is possible by first creating the model
+## SVM with radial kernel
+set.seed(42)
+train <- testsplit(data)
+set.seed(42)
+model <- SMO(Class~., data[train, -(ncol(data))], control =
+          Weka_control(K = "weka.classifiers.functions.supportVector.RBFKernel -G 3"))
+data[,"PClass"] <- predict(model, newdata = data)
+goldeneye(data = data[-train,], model = model)
+}
+\references{
+Henelius, A., Puolamaki, K, Bostroem, H., Asker, L.,
+Papapetrou, L. (2014) A Peek Into the Black Box: Exploring
+Classifiers by Randomization. Data Mining and Knowledge
+Discovery. (SUBMITTED)
+}
+

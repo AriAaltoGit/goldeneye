@@ -1,0 +1,45 @@
+\name{grouping}
+\alias{grouping}
+\title{An iterative algorithm to the find the optimal grouping of attributes
+for a dataset.}
+\usage{
+grouping(data, model, delta = (1/sqrt(nrow(data))), class.name = "PClass",
+  return.data = FALSE)
+}
+\arguments{
+  \item{data}{The dataset.}
+
+  \item{model}{A model created from the data using a
+  classifier.}
+
+  \item{delta}{The sensitivity parameter. Defaults to 1 /
+  sqrn(nrow(data)).}
+
+  \item{class.name}{The name of the column in the dataset
+  with the predicted classes.}
+
+  \item{return.data}{Should the inflated dataset used in
+  the grouping process be returned. Default is false.}
+}
+\value{
+A list containing the following items: \describe{
+\item{S}{The optimal grouping} \item{bayes.fidelity}{The
+fidelity when calculated using a naive Bayes
+(all-singleton) grouping.} \item{delta}{The value of delta
+used.} \item{data.inflated}{The dataset, created by
+sampling with replacement from the testing data, inflated
+based on the value of delta. Returned if return.data is
+TRUE.} }
+}
+\description{
+This function iteratively finds the optimal grouping of
+attributes for a dataset using a given classifier.
+}
+\examples{
+data <- gen.data.single.xor()
+train <- testsplit(data)
+model <- classifier.single.xor(Class~., data = data[train, -ncol(data)])
+data[,"PClass"]  <- predict(model, newdata = data)
+res <- grouping(data = data, model = model)
+}
+

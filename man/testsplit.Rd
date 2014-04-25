@@ -1,0 +1,34 @@
+\name{testsplit}
+\alias{testsplit}
+\title{Split data set into training and validation sets, stratifying by
+groups. Of each class of n items, floor(fraction*n) go to training
+set and ceiling((1-fraction)*n) go to validation set.}
+\usage{
+testsplit(data, fraction = 0.5, size = NULL, replace = FALSE,
+  stratify = "Class")
+}
+\arguments{
+  \item{data}{The data matrix}
+
+  \item{fraction}{The fraction of data to place in the
+  training and testing set.}
+
+  \item{size}{The amount of data to place in the training
+  and testing set}
+
+  \item{replace}{Should the splitting be with replacement.
+  Default is FALSE.}
+
+  \item{stratify}{Variable according to which
+  stratification should be performed.}
+}
+\value{
+Indices of the training set.
+}
+\description{
+Split data set into training and validation sets,
+stratifying by groups. Of each class of n items,
+floor(fraction*n) go to training set and
+ceiling((1-fraction)*n) go to validation set.
+}
+

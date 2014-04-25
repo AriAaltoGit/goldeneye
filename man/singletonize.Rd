@@ -1,0 +1,20 @@
+\name{singletonize}
+\alias{singletonize}
+\title{Create singletons of all attributes in the grouping X}
+\usage{
+singletonize(X, class.index)
+}
+\arguments{
+  \item{X}{The grouping}
+
+  \item{class.index}{The index of the class attribute
+  column in the data matrix that the grouping applies to.}
+}
+\value{
+A grouping with all-singleton attributes.
+}
+\description{
+Create singletons of all attributes in the grouping X
+}
+\keyword{internal}
+

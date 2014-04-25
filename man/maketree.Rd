@@ -1,0 +1,28 @@
+\name{maketree}
+\alias{maketree}
+\title{Create a grouping from two lists of attributes. The attributes
+in R are permuted within class as one group, whereas all attributes
+in S are singletonized.}
+\usage{
+maketree(R, S, class.index)
+}
+\arguments{
+  \item{R}{Unpartitioned groups, e.g. list(c(9, 1, 2, 4, 5,
+  7)}
+
+  \item{S}{Accumulated attribute groups, e.g. list(c(3, 6),
+  c(8))}
+
+  \item{class.index}{The index of the class attribute
+  column in the data matrix that the grouping applies to.}
+}
+\value{
+A new grouping
+}
+\description{
+Create a grouping from two lists of attributes. The
+attributes in R are permuted within class as one group,
+whereas all attributes in S are singletonized.
+}
+\keyword{internal}
+

@@ -1,0 +1,15 @@
+\name{classifier.double.xor}
+\alias{classifier.double.xor}
+\title{Exact classifier for the Double-XOR data}
+\usage{
+classifier.double.xor(formula, data)
+}
+\arguments{
+  \item{formula}{Model formula}
+
+  \item{data}{The data}
+}
+\description{
+Exact classifier for the Double-XOR data
+}
+

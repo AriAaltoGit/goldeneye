@@ -1,0 +1,19 @@
+\name{accuracy}
+\alias{accuracy}
+\title{Compute classification accuracy.}
+\usage{
+accuracy(estimate, class)
+}
+\arguments{
+  \item{estimate}{The estimated class}
+
+  \item{class}{The true class}
+}
+\value{
+The classification accuracy
+}
+\description{
+Compute classification accuracy.
+}
+\keyword{internal}
+

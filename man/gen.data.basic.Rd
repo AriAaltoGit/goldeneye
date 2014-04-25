@@ -1,0 +1,19 @@
+\name{gen.data.basic}
+\alias{gen.data.basic}
+\title{Basic helper function to generate random data.}
+\usage{
+gen.data.basic(nrows = 1000, ncols = 4)
+}
+\arguments{
+  \item{nrows}{Number of rows in the data}
+
+  \item{ncols}{Number of columns in the data}
+}
+\value{
+A binary matrix with random data.
+}
+\description{
+Basic helper function to generate random data.
+}
+\keyword{internal}
+

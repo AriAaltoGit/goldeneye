@@ -1,0 +1,24 @@
+\name{cpermute}
+\alias{cpermute}
+\title{Produces a permutation of integers 1:length(vec) such that the
+permutation leaves vec unchanged, i.e., the permutations are within
+class labes defined by vec.}
+\usage{
+cpermute(vec, replace = FALSE)
+}
+\arguments{
+  \item{vec}{Vector defining the permuations}
+
+  \item{replace}{Should the sampling be with or without
+  replacement. Default is FALSE.}
+}
+\value{
+A permutation.
+}
+\description{
+Produces a permutation of integers 1:length(vec) such that
+the permutation leaves vec unchanged, i.e., the
+permutations are within class labes defined by vec.
+}
+\keyword{internal}
+

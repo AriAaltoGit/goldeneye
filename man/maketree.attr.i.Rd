@@ -1,0 +1,33 @@
+\name{maketree.attr.i}
+\alias{maketree.attr.i}
+\title{Create a grouping from two lists of attributes, but the ith
+attribute from R a singleton attribute. This is used to test the
+effect on the fidelity that singletonizing the ith attribute of R
+has.}
+\usage{
+maketree.attr.i(R, S, i, class.index)
+}
+\arguments{
+  \item{R}{Unpartitioned groups, e.g. list(c(9, 1, 2, 4, 5,
+  7)}
+
+  \item{S}{Accumulated attribute groups, e.g. list(c(3, 6),
+  c(8))}
+
+  \item{i}{The ith attribute will be removed from R and
+  made a singleton.}
+
+  \item{class.index}{The index of the class attribute
+  column in the data matrix that the grouping applies to.}
+}
+\value{
+A new grouping
+}
+\description{
+Create a grouping from two lists of attributes, but the ith
+attribute from R a singleton attribute. This is used to
+test the effect on the fidelity that singletonizing the ith
+attribute of R has.
+}
+\keyword{internal}
+

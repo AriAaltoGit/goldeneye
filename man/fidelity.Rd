@@ -1,0 +1,28 @@
+\name{fidelity}
+\alias{fidelity}
+\title{Obtain a sample of the fidelity when the data the data has been
+permuted as parametrized by the tree. Notice that pred makes sense
+only if the true class variable has not been permuted!}
+\usage{
+fidelity(model, tree, data, class = "PClass")
+}
+\arguments{
+  \item{model}{A model of the data from a classifier}
+
+  \item{tree}{A permutation tree}
+
+  \item{data}{The data matrix}
+
+  \item{class}{The name of the column with the predicted
+  class label}
+}
+\value{
+The classification accuracy
+}
+\description{
+Obtain a sample of the fidelity when the data the data has
+been permuted as parametrized by the tree. Notice that pred
+makes sense only if the true class variable has not been
+permuted!
+}
+

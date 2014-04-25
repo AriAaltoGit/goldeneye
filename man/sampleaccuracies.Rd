@@ -1,0 +1,25 @@
+\name{sampleaccuracies}
+\alias{sampleaccuracies}
+\title{Compute the accuracies of the permutation tree.}
+\usage{
+sampleaccuracies(model, tree, data, R = 99, class = "Class")
+}
+\arguments{
+  \item{model}{A model of the data from a classifier}
+
+  \item{tree}{A permutation tree}
+
+  \item{data}{The data matrix}
+
+  \item{R}{The number of samples to use. Default is 99.}
+
+  \item{class}{The name of the column with the class label}
+}
+\value{
+The classification accuracy
+}
+\description{
+Compute the accuracies of the permutation tree.
+}
+\keyword{internal}
+
