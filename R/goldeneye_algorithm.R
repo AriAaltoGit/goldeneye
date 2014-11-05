@@ -235,7 +235,13 @@ goldeneye <- function(data, model = NULL, classifier = NULL, delta = (1 / sqrt(n
         
         if (! (pred.class.name %in% names(data)))
             stop(paste("Predicted class '", pred.class.name, "' not found in the data.", sep = ""))
-        
+
+        if (! is.factor(data[real.class.name]))
+            data[[real.class.name]] <- as.factor(data[[real.class.name]])
+
+        if (! is.factor(data[pred.class.name]))
+            data[[pred.class.name]] <- factor(data[[pred.class.name]], levels = levels(data[[real.class.name]]))
+
         ## Index of the column with the predicted class
         real.class.index <- which(names(data) == real.class.name)
         pred.class.index <- which(names(data) == pred.class.name)

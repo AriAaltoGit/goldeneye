@@ -8,7 +8,7 @@
 #' @return A permutation.
 #'
 #' @keywords internal
-cpermute <- function(vec,replace=FALSE) {
+cpermute <- function(vec, replace = FALSE) {
     res <- integer(length(vec))
     for(idx in tapply(1:length(vec),vec,function(x) x)) {
         res[idx] <- if(length(idx)>1) sample(idx,replace=replace) else idx
@@ -24,7 +24,7 @@ cpermute <- function(vec,replace=FALSE) {
 #' @return A permutation of the indices of the rows in the data matrix
 #'
 #' @keywords internal
-permutation <- function(tree,data) {
+permutation <- function(tree, data) {
     res <- matrix(1:dim(data)[1],dim(data)[1],dim(data)[2])
     for(vec in tree) {
         if(vec[1]==0) {
@@ -45,7 +45,7 @@ permutation <- function(tree,data) {
 #' @return The permuted data matrix
 #'
 #' @keywords internal
-permutedata <- function(data,perm) {
+permutedata <- function(data, perm) {
     for(idx in 1:dim(data)[2]) {
         data[,idx] <- data[perm[,idx],idx]
     }
@@ -60,8 +60,8 @@ permutedata <- function(data,perm) {
 #' @return The classification accuracy
 #'
 #' @keywords internal
-accuracy <- function(estimate,class) {
-    sum(estimate==class)/length(class)
+accuracy <- function(estimate, class) {
+    sum(estimate == class) / length(class)
 }
 
 
@@ -76,10 +76,10 @@ accuracy <- function(estimate,class) {
 #' @return The classification accuracy
 #'
 #' @export
-sampleaccuracy <- function(model,tree,data,class="Class") {
-    newdata <- permutedata(data,permutation(tree,data))
-    newpred <- predict(model,newdata=newdata)
-    accuracy(newpred,newdata[,class])
+sampleaccuracy <- function(model, tree, data, class = "Class") {
+    newdata <- permutedata(data, permutation(tree, data))
+    newpred <- predict(model, newdata = newdata)
+    accuracy(newpred, newdata[, class])
 }
 
 
@@ -94,7 +94,7 @@ sampleaccuracy <- function(model,tree,data,class="Class") {
 #' @return The classification accuracy
 #'
 #' @export
-fidelity <- function(model,tree,data,class="PClass") {
+fidelity <- function(model, tree, data, class = "PClass") {
     sampleaccuracy(model, tree, data, class = class)
 }
 
@@ -126,7 +126,7 @@ sampleaccuracies <- function(model, tree, data, R=99, class="Class") {
 #' @return The classification accuracy
 #'
 #' @export
-readdataset <- function(dataset,datapath,factorize=TRUE, na.omit = TRUE) {
+readdataset <- function(dataset, datapath, factorize = TRUE, na.omit = TRUE) {
     data <- read.arff(paste(datapath, dataset, '.arff', sep = ""))
 
     if (na.omit)
@@ -162,7 +162,7 @@ readdataset <- function(dataset,datapath,factorize=TRUE, na.omit = TRUE) {
 #' @return Indices of the training set.
 #'
 #' @export
-testsplit <- function(data,fraction=.5,size=NULL,replace=FALSE, stratify="Class") {
+testsplit <- function(data, fraction = 0.5, size = NULL, replace = FALSE, stratify = "Class") {
     if(!is.null(size)) {
         fraction <- size/dim(data)[1]
     }
