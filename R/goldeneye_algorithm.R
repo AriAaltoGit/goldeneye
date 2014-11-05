@@ -6,8 +6,9 @@
 #'
 #' @param data The dataset.
 #' @param model A model created from the data using a classifier.
-#' @param delta The sensitivity parameter. Defaults to 1 / sqrn(nrow(data)).
-#' @param class.name The name of the column in the dataset with the predicted classes.
+#' @param delta The sensitivity parameter. Defaults to 1 / sqrt(nrow(data)).
+#' @param class.name The name of the column in the dataset with the predicted classes. Optional. Default is \code{PClass}.
+#' @param class.name.2 The name of the column in the dataset with the real classes. Optional. Default is \code{Class}.
 #' @param return.data Should the inflated dataset used in the grouping process be returned. Default is false.
 #'
 #' @return A list containing the following items:
@@ -26,11 +27,11 @@
 #' res <- grouping(data = data, model = model)
 #'
 #' @export
-grouping <- function(data, model, delta = (1 / sqrt(nrow(data))), class.name = "PClass", return.data = FALSE) {
+grouping <- function(data, model, delta = (1 / sqrt(nrow(data))), class.name = "PClass", class.name.2 = "Class", return.data = FALSE) {
     ## Determine the index of the column class.name
     ## and the indices of the attribute columns
     class.index <- which(names(data) == class.name)
-    attrs       <- setdiff(seq.int(ncol(data)), which(names(data) %in% c("Class", "PClass")))
+    attrs       <- setdiff(seq.int(ncol(data)), which(names(data) %in% c(class.name, class.name.2)))
 
     ## Compute Naive Bayes fidelity using an inflated dataset, to ensure precision
     p     <- 0.5
@@ -165,10 +166,10 @@ prune.singletons <- function(data, model, delta = (1 / sqrt(nrow(data))), groupi
 #'
 #' @param data The dataset.
 #' @param model A model created from the data using a classifier.
-#' @param classifier A classifier (e.g. svm) to use
+#' @param classifier A classifier (e.g. \code{svm}) to use
 #' @param delta The sensitivity parameter. Defaults to 1 / sqrn(nrow(data)).
 #' @param real.class.name The name of the column in the dataset with the true classes.
-#' @param pred.class.name The name of the column in the dataset with the predicted classes.
+#' @param pred.class.name The name of the column in the dataset with the predicted classes. Optional. Default is \code{PClass}. If a column named \code{PClass} is not found in the dataset, it is automatically created.
 #' @param return.model Should the model created from a classifier be returned. Default is FALSE.
 #' @param return.data Should the data with predictions from the classifier be returned. Default is FALSE.
 #'
@@ -217,32 +218,44 @@ prune.singletons <- function(data, model, delta = (1 / sqrt(nrow(data))), groupi
 #' @export
 goldeneye <- function(data, model = NULL, classifier = NULL, delta = (1 / sqrt(nrow(data))), real.class.name = "Class", pred.class.name = "PClass", return.model = FALSE, return.data = FALSE) {
     if (is.null(model) & is.null(classifier)) {
-        warning("No model or classifier provided! Either must be provided.")
+        stop("No model or classifier provided! Either must be provided.")
     }
 
     ## Construct a model from the given classifier
     if (is.null(model) & ! is.null(classifier)) {
         cat("Creating classifier model.\n")
 
+        ## Check that the real class name and the predicted class are found.
+        ## Predicted class name is created if the default is null.
+        if (! real.class.name %in% names(data))
+            stop("Real class name not found in the dataset")
+
+        if ((pred.class.name == "PClass") & ! (pred.class.name %in% names(data)))
+            data$PClass <- NA
+        
+        if (! (pred.class.name %in% names(data)))
+            stop(paste("Predicted class '", pred.class.name, "' not found in the data.", sep = ""))
+        
         ## Index of the column with the predicted class
         real.class.index <- which(names(data) == real.class.name)
         pred.class.index <- which(names(data) == pred.class.name)
 
         ## Split data into training and testing
-        train <- testsplit(data)
+        train <- testsplit(data, stratify = real.class.name)
 
         ## Create model for the data
         model <- eval(parse(text = paste("classifier(", real.class.name, "~., data = data[train, -pred.class.index])", sep = "")))
 
         ## Add the original accuracy to the dataset
-        data[, pred.class.name]  <- predict(model, newdata = data)
+        data[, pred.class.name]  <- predict(model, newdata = data[, -pred.class.index])
 
         ## Remove the training set from the data
-        data <- data[-train,]
+        data <- data[-train, ]
+
     }
 
     ## Find the optimal grouping of the dataset
-    res   <- grouping(data = data, model = model, class.name = pred.class.name, delta = delta, return.data = TRUE)
+    res   <- grouping(data = data, model = model, class.name = pred.class.name, class.name.2 <- real.class.name, delta = delta, return.data = TRUE)
     S.fid <- fidelity(model = model, data = res$data.inflated, tree = res$S, class = pred.class.name)
 
     ## Prune singletons

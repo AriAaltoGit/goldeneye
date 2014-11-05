@@ -4,10 +4,10 @@
 #' attributes in a dataset. The groupings reveal how a classifier
 #' utilizes the structure of the data when classifying the data.
 #'
-#' @references Henelius, A., Puolamaki, K, Bostroem, H., Asker, L.,
-#'             Papapetrou, L. (2014) A Peek Into the Black Box:
+#' @references Henelius, A., Puolamaki, K, Bostrom, H., Asker, L.,
+#'             Papapetrou, P. (2014), A Peek Into the Black Box:
 #'             Exploring Classifiers by Randomization. Data Mining
-#'             and Knowledge Discovery. (SUBMITTED)
+#'             and Knowledge Discovery. 28:1503-1529.
 #'
 #' @docType package
 #' @name goldeneye

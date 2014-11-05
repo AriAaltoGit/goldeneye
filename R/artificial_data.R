@@ -51,7 +51,6 @@ gen.data.single.xor <- function(nrows = 1000, ncols = 5, noiselevel = 0.1, noise
     colnames(data) <- c(sapply(1:(ncols - 1), function(i) paste("A", i, sep = "")), "Class")
     data$Class     <- factor(data$Class)
 
-    data <- cbind(data, PClass = NA)
     data
 }
 
@@ -84,7 +83,6 @@ gen.data.double.xor <- function(nrows = 1000, ncols = 7, noiselevel = 0.1, noise
     colnames(data) <- c(sapply(1:(ncols - 1), function(i) paste("A", i, sep = "")), "Class")
     data$Class     <- factor(data$Class)
 
-    data <- cbind(data, PClass = NA)
     data
 }
 

@@ -1,6 +1,6 @@
 Package: goldeneye
-Version: 0.1.0
-Date: 25.04.2014
+Version: 0.1.2
+Date: 05.11.2014
 Title: Investigate how classifiers utilize the structure of
     the dataset.
 Description: Functions for finding groupings of attributes in a dataset. The
