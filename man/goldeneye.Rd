@@ -8,7 +8,8 @@ for a dataset, also pruning singletons.}
 \usage{
 goldeneye(data, model = NULL, classifier = NULL,
   delta = (1/sqrt(nrow(data))), real.class.name = "Class",
-  pred.class.name = "PClass", return.model = FALSE, return.data = FALSE)
+  pred.class.name = "PClass", goodness.function = fidelity,
+  predict.function = predict, return.model = FALSE, return.data = FALSE)
 }
 \arguments{
 \item{data}{The dataset.}
@@ -23,6 +24,10 @@ goldeneye(data, model = NULL, classifier = NULL,
 
 \item{pred.class.name}{The name of the column in the dataset with the predicted classes. Optional. Default is \code{PClass}. If a column named \code{PClass} is not found in the dataset, it is automatically created.}
 
+\item{goodness.function}{The function used to investigate the effect of randomizing attributes in the dataset. Optional. Default is \code{fidelity}.}
+
+\item{predict.function}{The function used to predict data using the classifier model. Optional. Default is the generic \code{predict} method with no additional arguments except \code{model} and \code{newdata}. Pass a custom \code{predict.function} if you, e.g., need to set some additional arguments to the \code{predict} function. A custom \code{predict.function} may only take the arguments \code{model} and \code{newdata}.}
+
 \item{return.model}{Should the model created from a classifier be returned. Default is FALSE.}
 
 \item{return.data}{Should the data with predictions from the classifier be returned. Default is FALSE.}
@@ -31,10 +36,10 @@ goldeneye(data, model = NULL, classifier = NULL,
 A list containing the following items:
 \describe{
 \item{S}{The optimal grouping}
-\item{S.fid}{The fidelity for the optimal grouping}
+\item{S.goodness}{The goodness (e.g, fidelity) for the optimal grouping}
 \item{S.pruned}{The optimal grouping with singletons pruned}
-\item{S.fid.pruned}{The fidelity for the optimal grouping with singletons pruned}
-\item{bayes.fidelity}{The fidelity when calculated using a naive Bayes (all-singleton) grouping.}
+\item{S.goodness.pruned}{The goodness (e.g., fidelity) for the optimal grouping with singletons pruned}
+\item{bayes.goodness}{The  goodness (e.g., fidelity) when calculated using a naive Bayes (all-singleton) grouping.}
 \item{acc.original}{The original classification accuracy.}
 \item{acc.final}{The classification accuracy using the final grouping, with singletons pruned.}
 \item{delta}{The value of delta used.}
@@ -55,19 +60,23 @@ attributes in a dataset. The groupings reveal how a classifier
 utilizes the structure of the data when classifying the data.
 }
 \examples{
+## Example 1
 library(RWeka)
 set.seed(42)
 data <- gen.data.single.xor()
 set.seed(42)
 goldeneye(data = data, classifier = classifier.single.xor)
 
+## Example 2
 ## C4.5 Decision tree
 set.seed(42)
 goldeneye(data = data, classifier = J48)
 
+## Example 3
 ## SVM with linear kernel
-#' goldeneye(data = data, classifier = SMO)
+goldeneye(data = data, classifier = SMO)
 
+## Example 4
 ## Using classifiers with custom parameters is possible by first creating the model
 ## SVM with radial kernel
 set.seed(42)
@@ -77,6 +86,11 @@ model <- SMO(Class~., data[train, -(ncol(data))], control =
           Weka_control(K = "weka.classifiers.functions.supportVector.RBFKernel -G 3"))
 data[,"PClass"] <- predict(model, newdata = data)
 goldeneye(data = data[-train,], model = model)
+
+## Example 5
+## Using a custom goodness function and the randomForest classifier from the randomForest package.
+library(randomForest)
+res <- goldeneye(data = data, classifier = randomForest, goodness.function = class_probability_ranking, predict.function = predict_randomforest_probability)
 }
 \references{
 Henelius, A., Puolamaki, K, Bostrom, H., Asker, L.,

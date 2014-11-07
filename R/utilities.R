@@ -91,11 +91,43 @@ sampleaccuracy <- function(model, tree, data, class = "Class") {
 #' @param tree A permutation tree
 #' @param data The data matrix
 #' @param class The name of the column with the predicted class label
-#' @return The classification accuracy
+#' @return The fidelity.
 #'
 #' @export
 fidelity <- function(model, tree, data, class = "PClass") {
     sampleaccuracy(model, tree, data, class = class)
+}
+
+
+#' A predict function for the randomForest classifier, which returns a
+#' vector giving the probability of instances belonging to class 0.
+#' 
+#' @param model A model of the data from a classifier
+#' @param newdata 
+#'
+#' @export
+predict_randomforest_probability <- function(model, newdata) {
+    predict(model, newdata = newdata, type = "prob")[,1]
+}
+
+
+#' Calculate the average rank order correlation of the probability of
+#' belonging to class 0 (suitable only for a binary class dataset)
+#' between the original dataset and a dataset permuted as parametrized
+#' by the tree.
+#'
+#' @param model A model of the data from a classifier
+#' @param tree A permutation tree
+#' @param data The data matrix
+#' @param class The name of the column with the predicted class label
+#' @return The avarege rank 
+#'
+#' @export
+class_probability_ranking <- function(model, tree, data, class = "PClass") {
+    newdata <- permutedata(data, permutation(tree, data))
+    newpred <- predict_randomforest_probability(model, newdata = newdata)
+
+    cor(data[[class]], newpred, method = "pearson")
 }
 
 

@@ -9,12 +9,13 @@
 #' @param delta The sensitivity parameter. Defaults to 1 / sqrt(nrow(data)).
 #' @param class.name The name of the column in the dataset with the predicted classes. Optional. Default is \code{PClass}.
 #' @param class.name.2 The name of the column in the dataset with the real classes. Optional. Default is \code{Class}.
+#' @param goodness.function The function used to investigate the effect of randomizing attributes in the dataset. Optional. Default is \code{fidelity}.
 #' @param return.data Should the inflated dataset used in the grouping process be returned. Default is false.
 #'
 #' @return A list containing the following items:
 #' \describe{
 #' \item{S}{The optimal grouping}
-#' \item{bayes.fidelity}{The fidelity when calculated using a naive Bayes (all-singleton) grouping.}
+#' \item{bayes.goodness}{The goodness (e.g., fidelity) when calculated using a naive Bayes (all-singleton) grouping.}
 #' \item{delta}{The value of delta used.}
 #' \item{data.inflated}{The dataset, created by sampling with replacement from the testing data, inflated based on the value of delta. Returned if return.data is TRUE.}
 #' }
@@ -27,7 +28,7 @@
 #' res <- grouping(data = data, model = model)
 #'
 #' @export
-grouping <- function(data, model, delta = (1 / sqrt(nrow(data))), class.name = "PClass", class.name.2 = "Class", return.data = FALSE) {
+grouping <- function(data, model, delta = (1 / sqrt(nrow(data))), class.name = "PClass", class.name.2 = "Class", goodness.function = fidelity, return.data = FALSE) {
     ## Determine the index of the column class.name
     ## and the indices of the attribute columns
     class.index <- which(names(data) == class.name)
@@ -37,7 +38,7 @@ grouping <- function(data, model, delta = (1 / sqrt(nrow(data))), class.name = "
     p     <- 0.5
     sigma <- delta / 5
     nr    <- ceiling((p * (1 - p)) / (sigma^2))
-    nbfid <- fidelity(model = model, tree = lapply(attrs, function(i) c(class.index, i)), data = data[sample(seq.int(nrow(data)), nr, replace = TRUE), ], class = class.name)
+    nbfid <- goodness.function(model = model, tree = lapply(attrs, function(i) c(class.index, i)), data = data[sample(seq.int(nrow(data)), nr, replace = TRUE), ], class = class.name)
 
     ## Inflate the dataset to ensure that the desired variance level can be reached
     p    <- max(0.5, nbfid)
@@ -45,6 +46,7 @@ grouping <- function(data, model, delta = (1 / sqrt(nrow(data))), class.name = "
     data <- data[sample(seq.int(nrow(data)), nr, replace = TRUE), ]
 
     ## --------------------------------------------------
+
     S     <- list()          # accumulated attribute groups
     R     <- as.list(attrs)  # groups to test for
     A     <- list()          # removed attributes
@@ -54,7 +56,7 @@ grouping <- function(data, model, delta = (1 / sqrt(nrow(data))), class.name = "
     ## group the attributes
     ## --------------------------------------------------
     while ((length(R) > 0) | (length(A) > 0)) {
-        if ((length(A) == 0) & (fidelity(model = model, data = data, class = class.name, tree = maketree(R, S, class.index)) < Delta)) {
+        if ((length(A) == 0) & (goodness.function(model = model, data = data, class = class.name, tree = maketree(R, S, class.index)) < Delta)) {
             ## Already below Delta before removing any attributes,
             ## so assign remaining attributes to singleton groups
             S <- c(lapply(S, function(i) c(class.index, i)), singletonize(R, class.index))
@@ -64,10 +66,10 @@ grouping <- function(data, model, delta = (1 / sqrt(nrow(data))), class.name = "
             ## Find the attribute j removal of which from R decreases the fidelity the least
             fids <- sapply(seq.int(length(R)),
                            function(i)
-                           fidelity(model = model,
-                                    data  = data,
-                                    class = class.name,
-                                    tree  = maketree.attr.i(R, c(A, S), i, class.index)))
+                           goodness.function(model = model,
+                                             data  = data,
+                                             class = class.name,
+                                             tree  = maketree.attr.i(R, c(A, S), i, class.index)))
             idx <- which.max(fids)
             if ((length(R) == 1) | (fids[idx] < Delta)) {
                 ## If the fidelity drops below Delta add the group of attributes to the result
@@ -84,7 +86,7 @@ grouping <- function(data, model, delta = (1 / sqrt(nrow(data))), class.name = "
     }
     ## Return final grouping
     out <- list("S"              = S,
-                "bayes.fidelity" = nbfid,
+                "bayes.goodness" = nbfid,
                 "delta"          = delta)
 
     if (return.data)
@@ -104,6 +106,7 @@ grouping <- function(data, model, delta = (1 / sqrt(nrow(data))), class.name = "
 #' @param delta The sensitivity parameter. Defaults to 1 / sqrn(nrow(data)).
 #' @param grouping A grouping parametrizing the data.
 #' @param class.name The name of the column in the dataset with the predicted classes.
+#' @param goodness.function The function used to investigate the effect of randomizing attributes in the dataset. Optional. Default is \code{fidelity}.
 #'
 #' @return A list containing the optimal grouping, with singletons pruned.
 #'
@@ -116,7 +119,7 @@ grouping <- function(data, model, delta = (1 / sqrt(nrow(data))), class.name = "
 #' S.pruned <- prune.singletons(data = data, model = model, grouping = res$S)
 #'
 #' @export
-prune.singletons <- function(data, model, delta = (1 / sqrt(nrow(data))), grouping = NULL, class.name = "PClass") {
+prune.singletons <- function(data, model, delta = (1 / sqrt(nrow(data))), grouping = NULL, class.name = "PClass", goodness.function = fidelity) {
     ## Sanity check
     if (is.null(grouping))
         stop("No grouping provided!")
@@ -169,6 +172,8 @@ prune.singletons <- function(data, model, delta = (1 / sqrt(nrow(data))), groupi
 #' @param classifier A classifier (e.g. \code{svm}) to use
 #' @param delta The sensitivity parameter. Defaults to 1 / sqrn(nrow(data)).
 #' @param real.class.name The name of the column in the dataset with the true classes.
+#' @param goodness.function The function used to investigate the effect of randomizing attributes in the dataset. Optional. Default is \code{fidelity}.
+#' @param predict.function The function used to predict data using the classifier model. Optional. Default is the generic \code{predict} method with no additional arguments except \code{model} and \code{newdata}. Pass a custom \code{predict.function} if you, e.g., need to set some additional arguments to the \code{predict} function. A custom \code{predict.function} may only take the arguments \code{model} and \code{newdata}.
 #' @param pred.class.name The name of the column in the dataset with the predicted classes. Optional. Default is \code{PClass}. If a column named \code{PClass} is not found in the dataset, it is automatically created.
 #' @param return.model Should the model created from a classifier be returned. Default is FALSE.
 #' @param return.data Should the data with predictions from the classifier be returned. Default is FALSE.
@@ -176,10 +181,10 @@ prune.singletons <- function(data, model, delta = (1 / sqrt(nrow(data))), groupi
 #' @return A list containing the following items:
 #' \describe{
 #' \item{S}{The optimal grouping}
-#' \item{S.fid}{The fidelity for the optimal grouping}
+#' \item{S.goodness}{The goodness (e.g, fidelity) for the optimal grouping}
 #' \item{S.pruned}{The optimal grouping with singletons pruned}
-#' \item{S.fid.pruned}{The fidelity for the optimal grouping with singletons pruned}
-#' \item{bayes.fidelity}{The fidelity when calculated using a naive Bayes (all-singleton) grouping.}
+#' \item{S.goodness.pruned}{The goodness (e.g., fidelity) for the optimal grouping with singletons pruned}
+#' \item{bayes.goodness}{The  goodness (e.g., fidelity) when calculated using a naive Bayes (all-singleton) grouping.}
 #' \item{acc.original}{The original classification accuracy.}
 #' \item{acc.final}{The classification accuracy using the final grouping, with singletons pruned.}
 #' \item{delta}{The value of delta used.}
@@ -192,19 +197,23 @@ prune.singletons <- function(data, model, delta = (1 / sqrt(nrow(data))), groupi
 #' }
 #'
 #' @examples
+#' ## Example 1
 #' library(RWeka)
 #' set.seed(42)
 #' data <- gen.data.single.xor()
 #' set.seed(42)
 #' goldeneye(data = data, classifier = classifier.single.xor)
 #'
+#' ## Example 2
 #' ## C4.5 Decision tree
 #' set.seed(42)
 #' goldeneye(data = data, classifier = J48)
 #'
+#' ## Example 3
 #' ## SVM with linear kernel
-#' #' goldeneye(data = data, classifier = SMO)
+#' goldeneye(data = data, classifier = SMO)
 #'
+#' ## Example 4
 #' ## Using classifiers with custom parameters is possible by first creating the model
 #' ## SVM with radial kernel
 #' set.seed(42)
@@ -215,8 +224,13 @@ prune.singletons <- function(data, model, delta = (1 / sqrt(nrow(data))), groupi
 #' data[,"PClass"] <- predict(model, newdata = data)
 #' goldeneye(data = data[-train,], model = model)
 #'
+#' ## Example 5
+#' ## Using a custom goodness function and the randomForest classifier from the randomForest package.
+#' library(randomForest)
+#' res <- goldeneye(data = data, classifier = randomForest, goodness.function = class_probability_ranking, predict.function = predict_randomforest_probability)
+#' 
 #' @export
-goldeneye <- function(data, model = NULL, classifier = NULL, delta = (1 / sqrt(nrow(data))), real.class.name = "Class", pred.class.name = "PClass", return.model = FALSE, return.data = FALSE) {
+goldeneye <- function(data, model = NULL, classifier = NULL, delta = (1 / sqrt(nrow(data))), real.class.name = "Class", pred.class.name = "PClass", goodness.function = fidelity, predict.function = predict, return.model = FALSE, return.data = FALSE) {
     if (is.null(model) & is.null(classifier)) {
         stop("No model or classifier provided! Either must be provided.")
     }
@@ -239,8 +253,8 @@ goldeneye <- function(data, model = NULL, classifier = NULL, delta = (1 / sqrt(n
         if (! is.factor(data[real.class.name]))
             data[[real.class.name]] <- as.factor(data[[real.class.name]])
 
-        if (! is.factor(data[pred.class.name]))
-            data[[pred.class.name]] <- factor(data[[pred.class.name]], levels = levels(data[[real.class.name]]))
+        ## if (! is.factor(data[pred.class.name]))
+        ##     data[[pred.class.name]] <- factor(data[[pred.class.name]], levels = levels(data[[real.class.name]]))
 
         ## Index of the column with the predicted class
         real.class.index <- which(names(data) == real.class.name)
@@ -253,7 +267,7 @@ goldeneye <- function(data, model = NULL, classifier = NULL, delta = (1 / sqrt(n
         model <- eval(parse(text = paste("classifier(", real.class.name, "~., data = data[train, -pred.class.index])", sep = "")))
 
         ## Add the original accuracy to the dataset
-        data[, pred.class.name]  <- predict(model, newdata = data[, -pred.class.index])
+        data[, pred.class.name]  <- predict.function(model, newdata = data[, -pred.class.index])
 
         ## Remove the training set from the data
         data <- data[-train, ]
@@ -261,26 +275,26 @@ goldeneye <- function(data, model = NULL, classifier = NULL, delta = (1 / sqrt(n
     }
 
     ## Find the optimal grouping of the dataset
-    res   <- grouping(data = data, model = model, class.name = pred.class.name, class.name.2 <- real.class.name, delta = delta, return.data = TRUE)
-    S.fid <- fidelity(model = model, data = res$data.inflated, tree = res$S, class = pred.class.name)
+    res        <- grouping(data = data, model = model, class.name = pred.class.name, class.name.2 <- real.class.name, delta = delta, goodness.function = goodness.function, return.data = TRUE)
+    S.goodness <- goodness.function(model = model, data = res$data.inflated, tree = res$S, class = pred.class.name)
 
     ## Prune singletons
-    S.pruned     <- prune.singletons(data = res$data.inflated, model = model, grouping = res$S, class.name = pred.class.name)
-    S.fid.pruned <- fidelity(model = model, data = res$data.inflated, tree = S.pruned, class = pred.class.name)
+    S.pruned          <- prune.singletons(data = res$data.inflated, model = model, grouping = res$S, class.name = pred.class.name, goodness.function = goodness.function)
+    S.goodness.pruned <- goodness.function(model = model, data = res$data.inflated, tree = S.pruned, class = pred.class.name)
 
     ## Original accuracy and final accuracy
     acc.original <- sampleaccuracy(model = model, data = res$data.inflated, tree = list(), class = real.class.name)
     acc.final    <- sampleaccuracy(model = model, data = res$data.inflated, tree = S.pruned, class = real.class.name)
 
     ## Return results
-    out <- list("S"              = res$S,
-                "S.fid"          = S.fid,
-                "S.pruned"       = S.pruned,
-                "S.fid.pruned"   = S.fid.pruned,
-                "bayes.fidelity" = res$bayes.fidelity,
-                "acc.original"   = acc.original,
-                "acc.final"      = acc.final,
-                "delta"          = res$delta)
+    out <- list("S"                 = res$S,
+                "S.goodness"        = S.goodness,
+                "S.pruned"          = S.pruned,
+                "S.goodness.pruned" = S.goodness.pruned,
+                "bayes.goodness"    = res$bayes.goodness,
+                "acc.original"      = acc.original,
+                "acc.final"         = acc.final,
+                "delta"             = res$delta)
 
     if (return.model)
         out <- c(out, "model" = list(model))

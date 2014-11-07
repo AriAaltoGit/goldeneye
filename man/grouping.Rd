@@ -5,7 +5,8 @@
 for a dataset.}
 \usage{
 grouping(data, model, delta = (1/sqrt(nrow(data))), class.name = "PClass",
-  class.name.2 = "Class", return.data = FALSE)
+  class.name.2 = "Class", goodness.function = fidelity,
+  return.data = FALSE)
 }
 \arguments{
 \item{data}{The dataset.}
@@ -18,13 +19,15 @@ grouping(data, model, delta = (1/sqrt(nrow(data))), class.name = "PClass",
 
 \item{class.name.2}{The name of the column in the dataset with the real classes. Optional. Default is \code{Class}.}
 
+\item{goodness.function}{The function used to investigate the effect of randomizing attributes in the dataset. Optional. Default is \code{fidelity}.}
+
 \item{return.data}{Should the inflated dataset used in the grouping process be returned. Default is false.}
 }
 \value{
 A list containing the following items:
 \describe{
 \item{S}{The optimal grouping}
-\item{bayes.fidelity}{The fidelity when calculated using a naive Bayes (all-singleton) grouping.}
+\item{bayes.goodness}{The goodness (e.g., fidelity) when calculated using a naive Bayes (all-singleton) grouping.}
 \item{delta}{The value of delta used.}
 \item{data.inflated}{The dataset, created by sampling with replacement from the testing data, inflated based on the value of delta. Returned if return.data is TRUE.}
 }

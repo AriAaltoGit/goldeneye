@@ -4,7 +4,7 @@
 \title{An iterative algorithm to prune singletons.}
 \usage{
 prune.singletons(data, model, delta = (1/sqrt(nrow(data))), grouping = NULL,
-  class.name = "PClass")
+  class.name = "PClass", goodness.function = fidelity)
 }
 \arguments{
 \item{data}{The dataset.}
@@ -16,6 +16,8 @@ prune.singletons(data, model, delta = (1/sqrt(nrow(data))), grouping = NULL,
 \item{grouping}{A grouping parametrizing the data.}
 
 \item{class.name}{The name of the column in the dataset with the predicted classes.}
+
+\item{goodness.function}{The function used to investigate the effect of randomizing attributes in the dataset. Optional. Default is \code{fidelity}.}
 }
 \value{
 A list containing the optimal grouping, with singletons pruned.

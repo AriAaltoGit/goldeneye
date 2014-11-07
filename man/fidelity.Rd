@@ -17,7 +17,7 @@ fidelity(model, tree, data, class = "PClass")
 \item{class}{The name of the column with the predicted class label}
 }
 \value{
-The classification accuracy
+The fidelity.
 }
 \description{
 Obtain a sample of the fidelity when the data the data has been
