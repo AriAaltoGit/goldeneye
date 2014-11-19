@@ -111,10 +111,10 @@ predict_randomforest_probability <- function(model, newdata) {
 }
 
 
-#' Calculate the average rank order correlation of the probability of
-#' belonging to class 0 (suitable only for a binary class dataset)
-#' between the original dataset and a dataset permuted as parametrized
-#' by the tree.
+#' Calculate the average Spearman rank order correlation of the
+#' probability of belonging to class 0 (suitable only for a binary
+#' class dataset) between the original dataset and a dataset permuted
+#' as parametrized by the tree.
 #'
 #' @param model A model of the data from a classifier
 #' @param tree A permutation tree
@@ -127,7 +127,7 @@ class_probability_ranking <- function(model, tree, data, class = "PClass") {
     newdata <- permutedata(data, permutation(tree, data))
     newpred <- predict_randomforest_probability(model, newdata = newdata)
 
-    cor(data[[class]], newpred, method = "pearson")
+    cor(data[[class]], newpred, method = "spearman")
 }
 
 
@@ -141,8 +141,8 @@ class_probability_ranking <- function(model, tree, data, class = "PClass") {
 #' @return The classification accuracy
 #'
 #' @keywords internal
-sampleaccuracies <- function(model, tree, data, R=99, class="Class") {
-    replicate(R,sampleaccuracy(model,tree,data,class=class))
+sampleaccuracies <- function(model, tree, data, R=99, class = "Class") {
+    replicate(R, sampleaccuracy(model, tree, data, class = class))
 }
 
 
