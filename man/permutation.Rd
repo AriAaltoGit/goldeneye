@@ -16,5 +16,4 @@ A permutation of the indices of the rows in the data matrix
 \description{
 Permute the data matrix using the permutation tree.
 }
-\keyword{internal}
 

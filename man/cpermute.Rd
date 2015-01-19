@@ -21,5 +21,4 @@ Produces a permutation of integers 1:length(vec) such that the
 permutation leaves vec unchanged, i.e., the permutations are within
 class labes defined by vec.
 }
-\keyword{internal}
 

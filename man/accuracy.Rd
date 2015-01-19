@@ -16,5 +16,4 @@ The classification accuracy
 \description{
 Compute classification accuracy.
 }
-\keyword{internal}
 

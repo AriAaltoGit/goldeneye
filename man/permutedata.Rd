@@ -16,5 +16,4 @@ The permuted data matrix
 \description{
 Use the permutation to obtain a new data matrix.
 }
-\keyword{internal}
 

@@ -7,7 +7,7 @@
 #'                replacement. Default is FALSE.
 #' @return A permutation.
 #'
-#' @keywords internal
+#' @export
 cpermute <- function(vec, replace = FALSE) {
     res <- integer(length(vec))
     for(idx in tapply(1:length(vec),vec,function(x) x)) {
@@ -23,7 +23,7 @@ cpermute <- function(vec, replace = FALSE) {
 #' @param data the data matrix
 #' @return A permutation of the indices of the rows in the data matrix
 #'
-#' @keywords internal
+#' @export
 permutation <- function(tree, data) {
     res <- matrix(1:dim(data)[1],dim(data)[1],dim(data)[2])
     for(vec in tree) {
@@ -44,7 +44,7 @@ permutation <- function(tree, data) {
 #' @param perm The permutation
 #' @return The permuted data matrix
 #'
-#' @keywords internal
+#' @export
 permutedata <- function(data, perm) {
     for(idx in 1:dim(data)[2]) {
         data[,idx] <- data[perm[,idx],idx]
@@ -59,7 +59,7 @@ permutedata <- function(data, perm) {
 #' @param class The true class
 #' @return The classification accuracy
 #'
-#' @keywords internal
+#' @export
 accuracy <- function(estimate, class) {
     sum(estimate == class) / length(class)
 }
@@ -130,6 +130,25 @@ class_probability_ranking <- function(model, tree, data, class = "PClass") {
     cor(data[[class]], newpred, method = "spearman")
 }
 
+#' Using the randomForest classifier, calculate the average Pearson
+#' correlation of the probability of belonging to class 0 (suitable
+#' only for a binary class dataset) between the original dataset and a
+#' dataset permuted as parametrized by the tree.
+#'
+#' @param model A model of the data from a classifier
+#' @param tree A permutation tree
+#' @param data The data matrix
+#' @param class The name of the column with the predicted class label
+#' @return The avarege rank 
+#'
+#' @export
+class_probability_ranking_pearson<- function(model, tree, data, class = "PClass") {
+    newdata <- permutedata(data, permutation(tree, data))
+    newpred <- predict_randomforest_probability(model, newdata = newdata)
+
+    cor(data[[class]], newpred, method = "pearson")
+}
+
 
 #' Compute the accuracies of the permutation tree.
 #'
@@ -140,7 +159,7 @@ class_probability_ranking <- function(model, tree, data, class = "PClass") {
 #' @param class The name of the column with the class label
 #' @return The classification accuracy
 #'
-#' @keywords internal
+#' @export
 sampleaccuracies <- function(model, tree, data, R=99, class = "Class") {
     replicate(R, sampleaccuracy(model, tree, data, class = class))
 }

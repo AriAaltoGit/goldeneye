@@ -22,5 +22,4 @@ The classification accuracy
 \description{
 Compute the accuracies of the permutation tree.
 }
-\keyword{internal}
 
