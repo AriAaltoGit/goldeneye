@@ -111,10 +111,10 @@ predict_randomforest_probability <- function(model, newdata) {
 }
 
 
-#' Calculate the average Spearman rank order correlation of the
-#' probability of belonging to class 0 (suitable only for a binary
-#' class dataset) between the original dataset and a dataset permuted
-#' as parametrized by the tree.
+#' Using the randomForest classifier, calculate the average Spearman
+#' rank order correlation of the probability of belonging to class 0
+#' (suitable only for a binary class dataset) between the original
+#' dataset and a dataset permuted as parametrized by the tree.
 #'
 #' @param model A model of the data from a classifier
 #' @param tree A permutation tree

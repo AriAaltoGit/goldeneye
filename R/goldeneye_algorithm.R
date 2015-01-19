@@ -131,7 +131,7 @@ prune.singletons <- function(data, model, delta = (1 / sqrt(nrow(data))), groupi
     class.index <- which(names(data) == class.name)
 
     ## Original fidelity
-    Delta <- fidelity(model = model, data = data, class = class.name, tree = S) - delta
+    Delta <- goodness.function(model = model, data = data, class = class.name, tree = S) - delta
 
     ## Singleton attributes
     ind.singleton <- which(sapply(S, function(i) length(i)) == 2)
@@ -141,10 +141,10 @@ prune.singletons <- function(data, model, delta = (1 / sqrt(nrow(data))), groupi
         ## Find the singleton X removal of which from S decreases the fidelity the least
         fid <- sapply(seq.int(length(ind.singleton)),
                       function(i)
-                      fidelity(model = model,
-                               data  = data,
-                               class = class.name,
-                               tree  = maketree.prune.i(S, ind.singleton[i], class.old = class.index, class.new = 0)))
+                          goodness.function(model = model,
+                                            data  = data,
+                                            class = class.name,
+                                            tree  = maketree.prune.i(S, ind.singleton[i], class.old = class.index, class.new = 0)))
         idx <- which.max(fid)
 
         if (fid[idx] >= Delta) {
