@@ -2,7 +2,7 @@
 #' permutation leaves vec unchanged, i.e., the permutations are within
 #' class labes defined by vec.
 #'
-#' @param vec Vector defining the permuations
+#' @param vec Vector defining the permutations
 #' @param replace Should the sampling be with or without
 #'                replacement. Default is FALSE.
 #' @return A permutation.
@@ -20,7 +20,7 @@ cpermute <- function(vec, replace = FALSE) {
 #' Permute the data matrix using the permutation tree.
 #'
 #' @param tree The permutation tree
-#' @param data the data matrix
+#' @param data The data matrix
 #' @return A permutation of the indices of the rows in the data matrix
 #'
 #' @export
@@ -40,7 +40,7 @@ permutation <- function(tree, data) {
 
 #' Use the permutation to obtain a new data matrix.
 #'
-#' @param tree The permutation tree
+#' @param data The data matrix
 #' @param perm The permutation
 #' @return The permuted data matrix
 #'

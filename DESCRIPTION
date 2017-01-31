@@ -1,17 +1,14 @@
 Package: goldeneye
-Version: 0.1.3
-Date: 05.11.2014
+Version: 0.2.0
+Date: 31.01.2016
 Title: Investigate how classifiers utilize the structure of
     the dataset.
 Description: Functions for finding groupings of attributes in a dataset. The
     groupings reveal how a classifier utilizes the structure of the data when
     classifying the data.
 Authors@R: c(person("Andreas", "Henelius", role = c("aut", "cre"), email =
-    "andreas.henelius@iki.fi"), person("Kai", "Puolamaki", role = c("aut"),
-    email = "kai.puolamaki@iki.fi"))
-Author: Andreas Henelius <andreas.henelius@iki.fi> and Kai Puolamaki
-    <kai.puolamaki@iki.fi>
-Maintainer: Andreas Henelius <andreas.henelius@iki.fi>
+    "andreas.henelius@ttl.fi"), person("Kai", "Puolamaki", role = c("aut"),
+    email = "kai.puolamaki@ttl.fi"), person("Finnish Institute of Occupational Health", role = c("cph")))
 Depends:
     R (>= 3.0.2)
 Suggests:
@@ -20,3 +17,4 @@ Suggests:
     randomForest
 License: MIT + file LICENSE
 URL: https://bitbucket.org/aheneliu/goldeneye
+RoxygenNote: 5.0.1

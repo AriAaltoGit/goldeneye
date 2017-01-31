@@ -59,7 +59,8 @@ grouping <- function(data, model, delta = (1 / sqrt(nrow(data))), class.name = "
         if ((length(A) == 0) & (goodness.function(model = model, data = data, class = class.name, tree = maketree(R, S, class.index)) < Delta)) {
             ## Already below Delta before removing any attributes,
             ## so assign remaining attributes to singleton groups
-            S <- c(lapply(S, function(i) c(class.index, i)), singletonize(R, class.index))
+            ##  S <- c(lapply(S, function(i) c(class.index, i)), singletonize(R, class.index))
+            S <- c(lapply(S, function(i) c(NULL, i)), singletonize(R, NULL))
             R <- list()
             A <- list()
         } else {
@@ -84,6 +85,9 @@ grouping <- function(data, model, delta = (1 / sqrt(nrow(data))), class.name = "
             }
         }
     }
+
+    S <- lapply(S, function(i) c(class.index, i))
+    
     ## Return final grouping
     out <- list("S"              = S,
                 "bayes.goodness" = nbfid,
@@ -275,7 +279,7 @@ goldeneye <- function(data, model = NULL, classifier = NULL, delta = (1 / sqrt(n
     }
 
     ## Find the optimal grouping of the dataset
-    res        <- grouping(data = data, model = model, class.name = pred.class.name, class.name.2 <- real.class.name, delta = delta, goodness.function = goodness.function, return.data = TRUE)
+    res        <- grouping(data = data, model = model, class.name = pred.class.name, class.name.2 = real.class.name, delta = delta, goodness.function = goodness.function, return.data = TRUE)
     S.goodness <- goodness.function(model = model, data = res$data.inflated, tree = res$S, class = pred.class.name)
 
     ## Prune singletons
