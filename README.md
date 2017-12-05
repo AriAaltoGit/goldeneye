@@ -1,4 +1,4 @@
-# `goldeneye`
+# goldeneye
 
 ## Overview
 The `goldeneye` package provides an R-implementation of the `GoldenEye` algorithm described in _Henelius, Puolamäki, Boström, Asker and Papapetrou. 2014. A peek into the black box: exploring classifiers by randomization_, [available here](https://doi.org/10.1007/s10618-014-0368-8). 
@@ -7,15 +7,14 @@ The package also implements the `GoldenEye++` algorithm described in the paper _
 
 Using the `goldeneye` method it is possible to uncover which attributes in a dataset that a classifier uses jointly for making predictions. A *dataset* is of the form
 
-<table border=1>
-<tr> <th>  </th> <th> A1 </th> <th> A2 </th> <th> A3 </th> <th> A4 </th> <th> Class </th>  </tr>
-  <tr> <td align="right"> 1 </td> <td align="right"> 1.00 </td> <td align="right"> 1.00 </td> <td align="right"> 1.00 </td> <td align="right"> 1.00 </td> <td> 1 </td> </tr>
-  <tr> <td align="right"> 2 </td> <td align="right"> 1.00 </td> <td align="right"> 0.00 </td> <td align="right"> 0.00 </td> <td align="right"> 0.00 </td> <td> 1 </td> </tr>
-  <tr> <td align="right"> 3 </td> <td align="right"> 0.00 </td> <td align="right"> 1.00 </td> <td align="right"> 1.00 </td> <td align="right"> 1.00 </td> <td> 0 </td> </tr>
-  <tr> <td align="right"> 4 </td> <td align="right"> 1.00 </td> <td align="right"> 1.00 </td> <td align="right"> 1.00 </td> <td align="right"> 0.00 </td> <td> 1 </td> </tr>
-  <tr> <td align="right"> 5 </td> <td align="right"> 1.00 </td> <td align="right"> 0.00 </td> <td align="right"> 1.00 </td> <td align="right"> 1.00 </td> <td> 1 </td> </tr>
-  <tr> <td align="right"> 6 </td> <td align="right"> 1.00 </td> <td align="right"> 0.00 </td> <td align="right"> 1.00 </td> <td align="right"> 0.00 </td> <td> 1 </td> </tr>
-   </table>
+item | A1 | A2 | A3 | A4 | Class
+---------------------------------
+1    | 1  | 1  | 1  | 1  |  1
+2    | 1  | 0  | 0  | 0  |  1
+3    | 0  | 1  | 1  | 1  |  0
+4    | 1  | 1  | 1  | 0  |  1
+5    | 1  | 0  | 1  | 1  |  1
+6    | 1  | 0  | 1  | 0  |  1
 
 where each row of the dataset is a data item of different attrbutes *A1*, ..., *A4* (in this example) and is associated with a *class label*. Given such a dataset and a classifier (e.g., the *randomForest* classifier or a *support vector machine (SVM)*), the `goldeneye` algorithm finds a grouping of attributes of the form *((A1, A2), (A3))*. In this case, the grouping means that attributes *A1* and *A2* are used jointly by the classifier in making predictions, attribute *A3* is not used in conjunction with other attributes, and attribute *A4* is uninformative for the classification task and is not part of the grouping.
 
