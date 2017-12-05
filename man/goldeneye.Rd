@@ -9,7 +9,7 @@
 goldeneye(data, model = NULL, classifier = NULL,
   delta = (1/sqrt(nrow(data))), real.class.name = "Class",
   pred.class.name = "PClass", goodness.function = fidelity,
-  predict.function = predict, return.model = FALSE, return.data = FALSE)
+  return.model = FALSE, return.data = FALSE)
 }
 \arguments{
 \item{data}{The dataset.}
@@ -25,8 +25,6 @@ goldeneye(data, model = NULL, classifier = NULL,
 \item{pred.class.name}{The name of the column in the dataset with the predicted classes. Optional. Default is \code{PClass}. If a column named \code{PClass} is not found in the dataset, it is automatically created.}
 
 \item{goodness.function}{The function used to investigate the effect of randomizing attributes in the dataset. Optional. Default is \code{fidelity}.}
-
-\item{predict.function}{The function used to predict data using the classifier model. Optional. Default is the generic \code{predict} method with no additional arguments except \code{model} and \code{newdata}. Pass a custom \code{predict.function} if you, e.g., need to set some additional arguments to the \code{predict} function. A custom \code{predict.function} may only take the arguments \code{model} and \code{newdata}.}
 
 \item{return.model}{Should the model created from a classifier be returned. Default is FALSE.}
 
@@ -90,7 +88,7 @@ goldeneye(data = data[-train,], model = model)
 ## Example 5
 ## Using a custom goodness function and the randomForest classifier from the randomForest package.
 library(randomForest)
-res <- goldeneye(data = data, classifier = randomForest, goodness.function = class_probability_ranking, predict.function = predict_randomforest_probability)
+res <- goldeneye(data = data, classifier = randomForest, goodness.function = class_probability_correlation_randomforest)
 
 }
 \references{

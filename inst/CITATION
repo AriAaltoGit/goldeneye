@@ -1,0 +1,16 @@
+bibentry(bibtype = "article",
+         key = "henelius:2014:astrid",
+         title = "A peek into the black box: exploring classifiers by randomization",
+         author = c(person("Andreas", "Henelius"),
+                    person("Kai", "Puolamäki"),
+                    person("Henrik", "Boström"),
+                    person("Lars", "Asker"),
+                    person("Panagiotis", "Papapetrou")
+                    ),
+         journal = "Data Mining and Knowledge Discovery",
+         year = 2014,
+         volume = 28,
+         pages = "1503-1529",
+         url = "https://doi.org/10.1007/s10618-014-0368-8",
+         doi = "10.1007/s10618-014-0368-8"
+         )

@@ -1,14 +1,14 @@
 Package: goldeneye
-Version: 0.2.0
-Date: 31.01.2016
+Version: 0.2.1
+Date: 05.12.2017
 Title: Investigate how classifiers utilize the structure of
-    the dataset.
+    a dataset.
 Description: Functions for finding groupings of attributes in a dataset. The
     groupings reveal how a classifier utilizes the structure of the data when
     classifying the data.
 Authors@R: c(person("Andreas", "Henelius", role = c("aut", "cre"), email =
     "andreas.henelius@ttl.fi"), person("Kai", "Puolamaki", role = c("aut"),
-    email = "kai.puolamaki@ttl.fi"), person("Finnish Institute of Occupational Health", role = c("cph")))
+    email = "kai.puolamaki@aalto.fi"), person("Finnish Institute of Occupational Health", role = c("cph")))
 Depends:
     R (>= 3.0.2)
 Suggests:

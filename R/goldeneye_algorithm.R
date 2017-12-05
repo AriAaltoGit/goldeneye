@@ -55,6 +55,7 @@ grouping <- function(data, model, delta = (1 / sqrt(nrow(data))), class.name = "
     ## --------------------------------------------------
     ## group the attributes
     ## --------------------------------------------------
+
     while ((length(R) > 0) | (length(A) > 0)) {
         if ((length(A) == 0) & (goodness.function(model = model, data = data, class = class.name, tree = maketree(R, S, class.index)) < Delta)) {
             ## Already below Delta before removing any attributes,
@@ -177,7 +178,6 @@ prune.singletons <- function(data, model, delta = (1 / sqrt(nrow(data))), groupi
 #' @param delta The sensitivity parameter. Defaults to 1 / sqrn(nrow(data)).
 #' @param real.class.name The name of the column in the dataset with the true classes.
 #' @param goodness.function The function used to investigate the effect of randomizing attributes in the dataset. Optional. Default is \code{fidelity}.
-#' @param predict.function The function used to predict data using the classifier model. Optional. Default is the generic \code{predict} method with no additional arguments except \code{model} and \code{newdata}. Pass a custom \code{predict.function} if you, e.g., need to set some additional arguments to the \code{predict} function. A custom \code{predict.function} may only take the arguments \code{model} and \code{newdata}.
 #' @param pred.class.name The name of the column in the dataset with the predicted classes. Optional. Default is \code{PClass}. If a column named \code{PClass} is not found in the dataset, it is automatically created.
 #' @param return.model Should the model created from a classifier be returned. Default is FALSE.
 #' @param return.data Should the data with predictions from the classifier be returned. Default is FALSE.
@@ -231,10 +231,10 @@ prune.singletons <- function(data, model, delta = (1 / sqrt(nrow(data))), groupi
 #' ## Example 5
 #' ## Using a custom goodness function and the randomForest classifier from the randomForest package.
 #' library(randomForest)
-#' res <- goldeneye(data = data, classifier = randomForest, goodness.function = class_probability_ranking, predict.function = predict_randomforest_probability)
+#' res <- goldeneye(data = data, classifier = randomForest, goodness.function = class_probability_correlation_randomforest)
 #' 
 #' @export
-goldeneye <- function(data, model = NULL, classifier = NULL, delta = (1 / sqrt(nrow(data))), real.class.name = "Class", pred.class.name = "PClass", goodness.function = fidelity, predict.function = predict, return.model = FALSE, return.data = FALSE) {
+goldeneye <- function(data, model = NULL, classifier = NULL, delta = (1 / sqrt(nrow(data))), real.class.name = "Class", pred.class.name = "PClass", goodness.function = fidelity, return.model = FALSE, return.data = FALSE) {
     if (is.null(model) & is.null(classifier)) {
         stop("No model or classifier provided! Either must be provided.")
     }
@@ -271,7 +271,7 @@ goldeneye <- function(data, model = NULL, classifier = NULL, delta = (1 / sqrt(n
         model <- eval(parse(text = paste("classifier(", real.class.name, "~., data = data[train, -pred.class.index])", sep = "")))
 
         ## Add the original accuracy to the dataset
-        data[, pred.class.name]  <- predict.function(model, newdata = data[, -pred.class.index])
+        data[, pred.class.name]  <- predict(model, newdata = data[, -pred.class.index])
 
         ## Remove the training set from the data
         data <- data[-train, ]

@@ -1,6 +1,6 @@
 #' Produces a permutation of integers 1:length(vec) such that the
 #' permutation leaves vec unchanged, i.e., the permutations are within
-#' class labes defined by vec.
+#' class labels defined by vec.
 #'
 #' @param vec Vector defining the permutations
 #' @param replace Should the sampling be with or without
@@ -101,9 +101,9 @@ fidelity <- function(model, tree, data, class = "PClass") {
 
 #' A predict function for the randomForest classifier, which returns a
 #' vector giving the probability of instances belonging to class 0.
-#' 
+#'
 #' @param model A model of the data from a classifier
-#' @param newdata 
+#' @param newdata
 #'
 #' @export
 predict_randomforest_probability <- function(model, newdata) {
@@ -111,8 +111,8 @@ predict_randomforest_probability <- function(model, newdata) {
 }
 
 
-#' Using the randomForest classifier, calculate the average Spearman
-#' rank order correlation of the probability of belonging to class 0
+#' Using the randomForest classifier, calculate the Spearman
+#' rank-order correlation of the probability of belonging to class 0
 #' (suitable only for a binary class dataset) between the original
 #' dataset and a dataset permuted as parametrized by the tree.
 #'
@@ -120,17 +120,22 @@ predict_randomforest_probability <- function(model, newdata) {
 #' @param tree A permutation tree
 #' @param data The data matrix
 #' @param class The name of the column with the predicted class label
-#' @return The avarege rank 
+#' @return Correlation between original and permuted class probabilities
 #'
 #' @export
-class_probability_ranking <- function(model, tree, data, class = "PClass") {
-    newdata <- permutedata(data, permutation(tree, data))
-    newpred <- predict_randomforest_probability(model, newdata = newdata)
+class_probability_ranking_randomforest <- function(model, tree, data, class = "PClass") {
+    ## Get class probabilities for the original data
+    cprob_orig <- predict_randomforest_probability(model, newdata = data)
 
-    cor(data[[class]], newpred, method = "spearman")
+    ## Shuffle the data and get new class probability rankings
+    newdata        <- permutedata(data, permutation(tree, data))
+    cprob_shuffled <- predict_randomforest_probability(model, newdata = newdata)
+
+    ## Calculate correlation between the class probability vectors    
+    cor(cprob_orig, cprob_shuffled, method = "spearman")
 }
 
-#' Using the randomForest classifier, calculate the average Pearson
+#' Using the randomForest classifier, calculate the Pearson
 #' correlation of the probability of belonging to class 0 (suitable
 #' only for a binary class dataset) between the original dataset and a
 #' dataset permuted as parametrized by the tree.
@@ -139,14 +144,19 @@ class_probability_ranking <- function(model, tree, data, class = "PClass") {
 #' @param tree A permutation tree
 #' @param data The data matrix
 #' @param class The name of the column with the predicted class label
-#' @return The avarege rank 
+#' @return Correlation between original and permuted class probabilities
 #'
 #' @export
-class_probability_ranking_pearson<- function(model, tree, data, class = "PClass") {
-    newdata <- permutedata(data, permutation(tree, data))
-    newpred <- predict_randomforest_probability(model, newdata = newdata)
+class_probability_correlation_randomforest <- function(model, tree, data, class = "PClass") {
+    ## Get class probabilities for the original data
+    cprob_orig <- predict_randomforest_probability(model, newdata = data)
 
-    cor(data[[class]], newpred, method = "pearson")
+    ## Shuffle the data and get new class probability rankings
+    newdata        <- permutedata(data, permutation(tree, data))
+    cprob_shuffled <- predict_randomforest_probability(model, newdata = newdata)
+
+    ## Calculate correlation between the class probability vectors    
+    cor(cprob_orig, cprob_shuffled, method = "pearson")
 }
 
 
@@ -326,10 +336,10 @@ group.importance <- function(model = model, data = data, class.name = class.name
 
     sapply(1:length(tree),
            function(i)
-           sampleaccuracy(model = model,
-                          tree  = maketree(tree, i, class.index),
-                          data  = data,
-                          class = class.name))
+        sampleaccuracy(model = model,
+                       tree  = maketree(tree, i, class.index),
+                       data  = data,
+                       class = class.name))
 }
 
 #' Determine the relative importance of each attribute in the dataset
@@ -349,10 +359,10 @@ attribute.importance <- function(model = model, data = data, class.name = class.
     all.attrs <- sort(setdiff(unlist(tree), c(0, class.index)))
     sapply(1:length(all.attrs),
            function(i)
-           sampleaccuracy(model = model,
-                          tree  = list(c(0, all.attrs[i]), c(class.index, all.attrs[-i])),
-                          data  = data,
-                          class = class.name))
+        sampleaccuracy(model = model,
+                       tree  = list(c(0, all.attrs[i]), c(class.index, all.attrs[-i])),
+                       data  = data,
+                       class = class.name))
 }
 
 
@@ -361,14 +371,14 @@ attribute.importance <- function(model = model, data = data, class.name = class.
 #' @param res The output from GoldenEye using the arguments return.model = TRUE and return.data = TRUE.
 #' @param pred.class.name The name of the column with the predicted class label.
 #' @param pred.class.index The index of the column with the predicted class label.
-#' 
+#'
 #' @return The input structure res with the following fields added:
 #' \describe{
 #' \item{group.scores}{The fidelity of each group in the optimal grouping. A lower fidelity score implies a more important group. Returned if calculate.importance is TRUE.}
 #' \item{attribute.scores}{The fidelity score for each individual attribute in the dataset. A lower fidelity score implies a more important attribute. Returned if calculate.importance is TRUE.}
 #' \item{attribute.ranks}{The rank order of the attribute scors. A lower rank implies a more important attribute. Returned if calculate.importance is TRUE.}
 #' }
-#' 
+#'
 #' @examples
 #' library(RWeka)
 #' set.seed(42)
@@ -376,7 +386,7 @@ attribute.importance <- function(model = model, data = data, class.name = class.
 #' set.seed(42)
 #' res   <- goldeneye(data = data, classifier = classifier.single.xor, return.model = TRUE, return.data = TRUE)
 #' res.i <- calculate.importance(res)
-#' 
+#'
 #' @export
 calculate.importance <- function(res, pred.class.name = "PClass", pred.class.index = NULL) {
     ## Set pred.class.index
@@ -402,8 +412,8 @@ calculate.importance <- function(res, pred.class.name = "PClass", pred.class.ind
                                   tree        = res$S.pruned)
 
     ## Return result
-    c(res, 
-    list("group.scores"     = imp.g,
-         "attribute.scores" = imp.a,
-         "attribute.ranks"  = order(imp.a, decreasing = FALSE)))
+    c(res,
+      list("group.scores"     = imp.g,
+           "attribute.scores" = imp.a,
+           "attribute.ranks"  = order(imp.a, decreasing = FALSE)))
 }
