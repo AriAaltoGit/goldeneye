@@ -8,7 +8,7 @@ The package also implements the `GoldenEye++` algorithm described in the paper _
 Using the `goldeneye` method it is possible to uncover which attributes in a dataset that a classifier uses jointly for making predictions. A *dataset* is of the form
 
 item | A1 | A2 | A3 | A4 | Class
----------------------------------
+-----|----|----|----|----|-------
 1    | 1  | 1  | 1  | 1  |  1
 2    | 1  | 0  | 0  | 0  |  1
 3    | 0  | 1  | 1  | 1  |  0
